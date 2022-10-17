@@ -1,4 +1,7 @@
 ﻿using Microsoft.Maui.Hosting;
+using Microsoft.Maui.Controls.Hosting;
+using SkiaSharp.Views.Maui.Controls.Hosting;
+using CommunityToolkit.Maui;
 
 namespace VersaMonitor;
 
@@ -23,7 +26,9 @@ public static class MauiProgram
 				fonts.AddFont("Lato-ThinItalic.ttf", "LatoThinItalic");
 				fonts.AddFont("Lato-Regular.ttf", "LatoLight");
 			})
-			.ConfigureAnimations(); 
+			.ConfigureAnimations()
+			.UseMauiCommunityToolkit()
+			.UseSkiaSharp(true); 
 
 		return builder.Build();
 	}
