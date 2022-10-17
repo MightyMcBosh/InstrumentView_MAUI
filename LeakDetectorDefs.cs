@@ -173,7 +173,7 @@ namespace VersaMonitor
         public static bool VRough, VGross, VFine, VUltra4, VUltra5, VVent, VCal, V8, V9, VSniff, VPurge; //Valves on the manifold
 
         public static string CFMatchString = @"\d{3}[-+]\d{2}";
-        public static string[] modeString = { "Standby", "Rough", "Gross", "Fine", "Ultra", "Sniff" };
+        public static string[] modeString = { "Standby", "Rough", "Gross", "Fine", "Ultra", "Sniff" , "Startup", "Shutdown", "Error"};
     }
 
 

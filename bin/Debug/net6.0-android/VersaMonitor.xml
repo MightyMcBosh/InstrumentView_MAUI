@@ -4,6 +4,16 @@
         <name>VersaMonitor</name>
     </assembly>
     <members>
+        <member name="T:VersaMonitor.LD">
+            <summary>
+            this will function as the logical black box for the Titan Versa. It handles the socket connection internally and retains current information and passes it up the chain. 
+            </summary>
+        </member>
+        <member name="T:VersaMonitor.ViewModel">
+            <summary>
+            this file handles the hooking of the LD model to the UI views. 
+            </summary>
+        </member>
         <member name="E:VersaMonitor.ViewModel.PropertyChanged">
             <inheritdoc cref = "E:System.ComponentModel.INotifyPropertyChanged.PropertyChanged"/>
         </member>
@@ -383,6 +393,12 @@
         </member>
         <member name="P:VersaMonitor.ViewModel.RemoveSeriesCommand">
             <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:VersaMonitor.ViewModel.RemoveSeries"/>.</summary>
+        </member>
+        <member name="T:VersaMonitor.StartStatus">
+            
+             broke out RDT into its own code file because a) it's easier to read and b) it will be easier to move this around when I get around to writing the instrument companion app. 
+             
+             
         </member>
         <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_Button.TextColorTo(Microsoft.Maui.Controls.Button,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing)">
             <summary>

@@ -33177,24 +33177,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\stone\\.nuget\\packages\\": {},
+    "C:\\Users\\benj\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\stone\\source\\InstrumentView_MAUI\\VersaMonitor.csproj",
+      "projectUniqueName": "C:\\Users\\benj\\source\\repos\\VersaMonitor\\VersaMonitor.csproj",
       "projectName": "VersaMonitor",
-      "projectPath": "C:\\Users\\stone\\source\\InstrumentView_MAUI\\VersaMonitor.csproj",
-      "packagesPath": "C:\\Users\\stone\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\stone\\source\\InstrumentView_MAUI\\obj\\",
+      "projectPath": "C:\\Users\\benj\\source\\repos\\VersaMonitor\\VersaMonitor.csproj",
+      "packagesPath": "C:\\Users\\benj\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\benj\\source\\repos\\VersaMonitor\\obj\\",
       "projectStyle": "PackageReference",
       "crossTargeting": true,
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\stone\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\benj\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -33205,8 +33205,8 @@
         "net6.0-windows10.0.19041.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "C:\\Program Files\\dotnet\\library-packs": {},
+        "C:\\Users\\benj\\source\\repos\\TinyCLR\\TinyCLR-OS-Libraries-v2.2.0.3000-rc1": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
