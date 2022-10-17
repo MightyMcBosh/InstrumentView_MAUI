@@ -42,7 +42,7 @@ namespace VersaMonitor
 
 
 
-        static async Task Connect(IPAddress ip)
+        public async Task Connect(IPAddress ip)
         {
             IP = ip;
 
@@ -58,7 +58,7 @@ namespace VersaMonitor
 
 
 
-        static async void RunEthernet()
+        public async void RunEthernet()
         {
             //using StreamWriter logfile = new("Data" + DateTime.Now.ToString("u").Trim('/',' ','-','.',':','Z') + ".csv"); 
             bool wasLogging = false;
@@ -151,7 +151,7 @@ namespace VersaMonitor
             }            
         }
 
-        public static void ToggleLD(object state)
+        public void ToggleLD(object state)
         {
             SendCustom = true;
             if (LD.TestMode == Mode.Standby)
@@ -162,7 +162,7 @@ namespace VersaMonitor
                 custom = SerialCommands.StopCycle; 
         }
 
-        public static void StartCal(object state)
+        public void StartCal(object state)
         {
             SendCustom = true;
             custom = SerialCommands.StartAutoCal; 
