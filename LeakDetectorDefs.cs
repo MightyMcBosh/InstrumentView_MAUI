@@ -91,6 +91,8 @@ namespace VersaMonitor
         //internal values, need to use Setters to fire events
         private static double _leakrate, _reject, _pressure;
         private static DetectorState _detectorState;
+
+
         private static bool _connected;
 
 
@@ -106,8 +108,6 @@ namespace VersaMonitor
                 }
             }
         }
-
-
 
         public static double LeakRate
         {
@@ -195,7 +195,7 @@ namespace VersaMonitor
         public static AsciiCommand StartCycle = new AsciiCommand("=CYE", "", 0, 0);
         public static AsciiCommand StopCycle = new AsciiCommand("=CYD", "", 0, 0);
         public static AsciiCommand StartAutoCal = new AsciiCommand("!AC", "", 0, 0);
-        public static AsciiCommand GetStatus = new AsciiCommand("?HMI", "", 28, 1);
+        public static AsciiCommand GetStatus = new AsciiCommand("?HMI", "", 29, 1);
         public static AsciiCommand GetCycleState = new AsciiCommand("?VA", "", 6, 2);
         public static AsciiCommand GetRDT= new AsciiCommand("?RDT", "", 11, 3);
         public static AsciiCommand GetLeakRate = new AsciiCommand("?LE", "", 8, 4);
@@ -225,35 +225,31 @@ namespace VersaMonitor
         };
 
 
-        public static void Parse(byte[] input, int opt)
+        public static void Parse(string resp, int opt)
         {
-            string resp = Encoding.UTF8.GetString(input);
+            
 
             switch (opt)
             {
                 case 0:
                     break;
                 case 1:
-                    
 
                     string lr = resp.Substring(0, 6);
 
-                    string pres = resp.Substring(13,6); 
+                    string pres = resp.Substring(13, 6);
 
+                    LD.LeakRate = GetCF(lr);
 
-                    if(System.Text.RegularExpressions.Regex.IsMatch(lr,LD.CFMatchString))
-                        LD.LeakRate = GetCF(lr);
-
-                    if (System.Text.RegularExpressions.Regex.IsMatch(pres, LD.CFMatchString))
-                        LD.InletPressure = GetCF(pres);
+                    LD.InletPressure = GetCF(pres);
                     break;
 
                 case 2:
-                    resp = Encoding.UTF8.GetString(input);
+                  
                     ParseValveStatus(resp.Substring(0,5)); 
                     break;
                 case 3: //rdt 
-                    resp = Encoding.UTF8.GetString(input);
+                    
 
                     if (resp.Length > 10)
                     {
@@ -269,8 +265,8 @@ namespace VersaMonitor
                     break;
 
                 case 4: // ?LE: Leak rate. REsponse 
-                    lr = resp.Substring(0, 6);
-                    LD.LeakRate = GetCF(lr); 
+                    string lr2 = resp.Substring(0, 6);
+                    LD.LeakRate = GetCF(lr2); 
                     LD.isCorrected = resp.Substring(6, 1) == "C";                    
 
                     break;

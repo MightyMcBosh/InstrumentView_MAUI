@@ -33205,9 +33205,8 @@
         "net6.0-windows10.0.19041.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "C:\\Program Files\\dotnet\\library-packs": {},
-        "https://api.nuget.org/v3/index.json": {}
+        "C:\\Users\\stone\\source\\TinyCLRApps\\TinyCLR-OS-Libraries-v2.2.0.5000": {}
       },
       "frameworks": {
         "net6.0-android31.0": {

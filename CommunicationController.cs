@@ -8,12 +8,15 @@ using System.Threading.Tasks;
 using System.Net; 
 using System.Net.Sockets;
 using System.Text;
-
+using System.Reflection.Emit;
+using System.Transactions;
 
 namespace VersaMonitor
 {
     public class CommunicationController
     {
+
+        public event OnConnectionChangeHandler ConnectionChange; 
         
         static bool BytesRecvd = false; 
         static string name;
@@ -23,7 +26,7 @@ namespace VersaMonitor
         static string matchcom = @"COM\d{1,2}";
         static string matchbaud = @"\d{1,5}";
         static bool logging = false; 
-        static bool polling = false; 
+        static bool polling = true; 
         static bool exit = false;
         static ArrayList list; //contains all of the readings of the leak detector
         static bool isRunningCleanup = false;
@@ -33,8 +36,9 @@ namespace VersaMonitor
         static int comPort = 5226;
         static IPEndPoint localEP, remoteEP; 
         static Socket comSocket;
-        static bool isConnected;
-        static Task connection;
+        
+
+   
 
         static int numCommands, lastNumCommands, numBadCommands = 0;
 
@@ -56,24 +60,31 @@ namespace VersaMonitor
                 //comSocket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.KeepAlive, true);
                 comSocket.Bind(localEP);
                 await comSocket.ConnectAsync(remoteEP);
+                Console.WriteLine($"Connected ! to {remoteEP}");
+                LD.Connected = true; 
+                
             }
             catch (Exception)
             {
-                Console.WriteLine($"Could not connect to {localEP}");                
+                Console.WriteLine($"Could not connect to {remoteEP}");                
             }
         }
 
 
 
 
-        public async void RunEthernet()
+        public async Task RunEthernet()
         {
             //using StreamWriter logfile = new("Data" + DateTime.Now.ToString("u").Trim('/',' ','-','.',':','Z') + ".csv"); 
             bool wasLogging = false;
             bool sending = true;
             bool error = false;
+            bool found = false; 
          
             Timer rcvTimeout = new Timer((a) => { sending = true; }, null, Timeout.Infinite, Timeout.Infinite);
+
+            NetworkStream iostream = new NetworkStream(comSocket); 
+            
 
             DateTime lastdt = DateTime.Now;  
             int commandindex = 0; 
@@ -90,73 +101,118 @@ namespace VersaMonitor
 
            
           
-            char[] trimEnd  = new char[] { '\r', '\u0006','\u0000' }; 
+            char[] trimEnd  = new char[] { '\r', '\u0006','\u0000' };
 
-
-            while (!error && !exit)            
+            StringBuilder builder = new StringBuilder(); 
+            try
             {
+                while (!error && !exit)
+                {
+
+                    if (sending)
+                    {
+
+                        if (SendCustom)
+                        {
+                            current = custom;
+                            commandindex--; //resend the previous command
+                            SendCustom = false;
+                        }
+                        Array.Clear(rcvbuf, 0, rcvbuf.Length);
+                        string str = current.cmd + "\r";
+                        byte[] b = Encoding.UTF8.GetBytes(str);
+                        Console.WriteLine($"cmd sent - {current.cmd}");
+
+                        iostream.Write(b, 0, b.Length);
+                        sending = false;
+                        builder.Clear();
+
+                        rcvTimeout.Change(30000, Timeout.Infinite);
+                    }
+                    else if (!sending)
+                    {
+                       
+                        while(iostream.DataAvailable && !found)
+                        {
+                            int tmp = iostream.ReadByte();
+                            builder.Append((char)tmp);
+                            if (tmp == 0x06)
+                                found = true; 
+                            
+                        }
+                        if (found)
+                        {
+                            found = false; 
+                            string resp = builder.ToString();
+                            builder.Clear(); 
+                            rcvTimeout.Change(Timeout.Infinite, Timeout.Infinite);
+
+                           // Console.WriteLine(resp);
+
+
+                            if (current.ackloc != 255 && resp[current.ackloc] != 0x06)
+                            {
+                                char t = resp[current.ackloc];
+                                Console.WriteLine($"character at index {current.ackloc} is {t}"); 
+                                string errorstr = $"{DateTime.Now},{current.cmd.TrimEnd(trimEnd)},{current.ackloc},{Encoding.UTF8.GetString(rcvbuf)}";
+                                Console.WriteLine(errorstr);
+                                sending = true; //try to resend the broken command
+                                numBadCommands++;
+                            }
+                            else
+                            {
+
+
+                                SerialCommands.Parse(resp, current.ParseOpt);
+                                numCommands++;
+
+                                if (++commandindex >= SerialCommands.cycle.Length)
+                                    commandindex = 0;
+                              
+
+
+                                TimeSpan span = DateTime.Now - lastdt;
+                                string res = Encoding.UTF8.GetString(rcvbuf);
+                                res = res.Trim(trimEnd);
+
+                                //prepare for next command
+                                lastdt = DateTime.Now;
+                                current = SerialCommands.cycle[commandindex];
+                                
+                                sending = true;
+                                Array.Clear(rcvbuf, 0, rcvbuf.Length);
+                            }
+                        }
+                    }
+                    Thread.Sleep(20);
+                    wasLogging = logging;
+                }
+            }
+            catch (Exception)
+            {
+                LD.Connected = false;
+                try
+                {
+                    iostream.Dispose();
+                    iostream = null;
+                }
+                catch (Exception)
+                {
+
+                }
+
+                try
+                {
+                    comSocket.Close();
+                    comSocket.Dispose();
+                }
+                catch (Exception)
+                {
+
+                }
                 
-                if (sending && polling)
-                {
-
-                    if(SendCustom)
-                    {
-                        current = custom;
-                        commandindex--; //resend the previous command
-                        SendCustom = false; 
-                    }
-                    Array.Clear(rcvbuf, 0, rcvbuf.Length);
-                    comSocket.Send(Encoding.UTF8.GetBytes(current.cmd + "\r"));
-                    sending = false;
-                     
-                    rcvTimeout.Change(30000, Timeout.Infinite); 
-                }
-                else if(!sending && polling)
-                {
-                    if(comSocket.Available > 0)
-                    {
-                        int numBytesRecvd = comSocket.Receive(rcvbuf,SocketFlags.None); 
-                        rcvTimeout.Change(Timeout.Infinite, Timeout.Infinite);
-
-
-                        if (current.ackloc != 255 &&  rcvbuf[current.ackloc] != 0x06)
-                        {
-                            string errorstr = $"{DateTime.Now},{current.cmd.TrimEnd(trimEnd)},{current.ackloc},{Encoding.UTF8.GetString(rcvbuf)}";
-                            
-                            sending = true; //try to resend the broken command
-                            numBadCommands++; 
-                        }
-                        else
-                        {
-                            
-
-                            SerialCommands.Parse(rcvbuf, current.ParseOpt);
-                            numCommands++; 
-                        
-                            if (commandindex >= SerialCommands.cycle.Length)
-                                commandindex = 0;
-
-
-                            TimeSpan span = DateTime.Now - lastdt;
-                            string res = Encoding.UTF8.GetString(rcvbuf);
-                            res = res.Trim(trimEnd);
-                            
-                            string ComLogString = DateTime.Now.ToString("MM/dd/yy,HH:mm:ss.fff") + $",{current.cmd},{res},{span.TotalMilliseconds}"; //this will log every command and how long it took
-                            
-
-
-                            //prepare for next command
-                            lastdt = DateTime.Now; 
-                            current = SerialCommands.cycle[commandindex];
-                            commandindex++;
-                            sending = true;
-                            Array.Clear(rcvbuf, 0, rcvbuf.Length); 
-                        }
-                    }
-                }
-                Thread.Sleep(10);
-                wasLogging = logging; 
-            }            
+            }
+            LD.Connected = false; 
         }
 
         public void ToggleLD(object state)

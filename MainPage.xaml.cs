@@ -16,9 +16,7 @@ public partial class MainPage : ContentPage
 	public MainPage()
 	{
 		InitializeComponent();
-		Vm = new ViewModel();
-		this.BindingContext = Vm;
-          
+        Vm = this.BindingContext as ViewModel; 
 	}
 
 	
@@ -31,12 +29,14 @@ public partial class MainPage : ContentPage
 
         if (IPAddress.TryParse((result as string), out ip))
         {
-            await Vm.TryStart(ip);
+            new Task(async () => await Vm.TryStart(ip)).Start();
         }
     }
 
     private void ConnectButtonClick(object sender, EventArgs e)
     {
+        var args = (e as ClickedEventArgs);
+        
         TryConnect(); 
     }
 }

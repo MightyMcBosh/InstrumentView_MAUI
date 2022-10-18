@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Java.Lang;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -28,10 +29,10 @@ namespace VersaMonitor
         public bool Passing { get; internal set; } = false; 
         public bool InCycle { get; internal set; } = false; 
         public bool Connected { get; internal set; } = false;
-        public bool Disconnected { get; internal set; } = true; 
-       
+        public bool Disconnected { get; internal set; } = true;
 
 
+        public bool InUse = false; 
         private CommunicationController controller; 
         
 
@@ -99,7 +100,16 @@ namespace VersaMonitor
 
         public async Task TryStart(IPAddress add)
         {
-            await controller.Connect(add); 
+            if (!InUse)
+            {
+                InUse = true; 
+                await controller.Connect(add);
+
+                await controller.RunEthernet();
+                //disconnected
+                LD.Connected = false;
+                InUse = false; 
+            }
         }
         public void StartStopButtonPress()
         {
@@ -117,29 +127,11 @@ namespace VersaMonitor
         {
             
             double tmpIn = value;
-            string r1 = "", r2 = ""; 
-            int baseExp;
-            // convert mantissa/exp first:
-            if (value == 0.0)
-            {
-                
-            }
-            else if (value > 0.0 & value < 1.0)      // positive, < 1
-            {
-                baseExp = 0;
-                while (tmpIn < 0.999) //two digits of precision, have issues with this parsing to like 0.9999999999999976, which is > .999 but smaller than 1
-                {
-                    tmpIn *= 10;
-                    --baseExp;
-                }
-                for (int I = 0; I < 2; I++)     // add two -> implied decimal
-                {
-                    tmpIn *= 10;
-                    --baseExp;
-                }
-                r1 = tmpIn.ToString("D");
-                r2 =  baseExp.ToString("d2");
-            }            
+            string tmp = string.Format("{0:#.##E+00}", tmpIn);
+
+
+            string r1 = tmp.Substring(0, 4);
+            string r2 = tmp.Substring(5, 3); 
             // ..: negatives
 
            return (r1,r2);

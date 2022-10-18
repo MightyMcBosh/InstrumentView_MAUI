@@ -52,6 +52,7 @@ public partial class ViewModel
         // List<T> does not implement INotifyCollectionChanged
         // this means the following series is not listening for changes.
         // Series.Add(new ColumnSeries<int> { Values = new List<int> { 2, 4, 6, 1, 7, -2 } }); 
+        InitializeLDMap(); 
     }
 
     public ObservableCollection<ISeries> LeakRateSeries { get; set; }
