@@ -4,6 +4,7 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace VersaMonitor
 {
@@ -61,7 +62,8 @@ namespace VersaMonitor
         LeakRate,
         Reject,
         Pressure,
-        State
+        State,
+        LRUnits
     }
 
     public class OnStatusChangeHandlerArgs
@@ -91,6 +93,7 @@ namespace VersaMonitor
         //internal values, need to use Setters to fire events
         private static double _leakrate, _reject, _pressure;
         private static DetectorState _detectorState;
+        private static string _lrunits = ""; 
 
 
         private static bool _connected;
@@ -105,6 +108,19 @@ namespace VersaMonitor
                 {
                     _connected = value;
                     ConnectionChanged?.Invoke(_connected);
+                }
+            }
+        }
+
+        public static string LRUnits
+        {
+            get => _lrunits;
+            set
+            {
+                if (_lrunits != value)
+                {
+                    _lrunits = value;
+                    StatusChanged?.Invoke(new OnStatusChangeHandlerArgs(DetectorProperty.LRUnits, value));
                 }
             }
         }
@@ -175,6 +191,7 @@ namespace VersaMonitor
 
         public static string CFMatchString = @"\d{3}[-+]\d{2}";
         public static string[] modeString = { "Standby", "Rough", "Gross", "Fine", "Ultra", "Sniff" , "Startup", "Shutdown", "Error"};
+        public static string[] unitStrings = { "mTor.l/s","mbar.l/s" ,"pa.m3/h" ,"torr.l/s" ,"atm.cc/s" ,"ppm" ,"sccm" ,"sccs" };
     }
 
 
@@ -204,12 +221,14 @@ namespace VersaMonitor
         public static AsciiCommand GetZeroStatus = new AsciiCommand("?AZ", "", 2, 7); 
         public static AsciiCommand StartZero = new AsciiCommand("=AZE", "", 0, 0);
         public static AsciiCommand StopZero = new AsciiCommand("=AZD", "", 0, 0);
+        public static AsciiCommand GetUnits = new AsciiCommand("?UN", "", 2, 8);
 
 
 
 
         public static AsciiCommand[] cycle = { //Copied straight from the Atlas cycle. going to use for troubleshooting. 
         GetRDT,
+        GetUnits,
         GetLeakRate,
         GetStatus,
         GetForelinePressure,
@@ -297,7 +316,11 @@ namespace VersaMonitor
                     break;
                 case 7: //zero Status
                     LD.ZeroOn = resp.Substring(0, 1) == "E"; 
-                    break; 
+                    break;
+
+                case 8: //?UN
+                    LD.LRUnits = LD.unitStrings[int.Parse(resp.Substring(0, 1))];                    
+                    break;
 
 
 

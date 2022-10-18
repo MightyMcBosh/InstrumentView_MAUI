@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using Android.App.Usage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
+using SkiaSharp; 
+
 
 namespace VersaMonitor; 
 
@@ -15,37 +19,120 @@ public partial class ViewModel
 {
     private readonly Random _random = new();
     private readonly ObservableCollection<ObservableValue> _observableValues;
+    private static readonly int s_logBase = 10; 
+
+    private static  LiveChartsCore.SkiaSharpView.Painting.LinearGradientPaint pass = new LiveChartsCore.SkiaSharpView.Painting.LinearGradientPaint(
+          new[] { new SKColor(0,128,20), new SKColor(10,10,10) },
+
+
+        // we must go from the point:
+        // (x0, y0) where x0 could be read as "the middle of the x axis" (0.5) and y0 as "the start of the y axis" (0)
+        new SKPoint(0.5f, 0),
+
+        // to the point:
+        // (x1, y1) where x1 could be read as "the middle of the x axis" (0.5) and y0 as "the end of the y axis" (1)
+        new SKPoint(0.5f, 1));
+    private static  LiveChartsCore.SkiaSharpView.Painting.LinearGradientPaint fail = new LiveChartsCore.SkiaSharpView.Painting.LinearGradientPaint(
+          new[] { new SKColor(128, 0, 20), new SKColor(10, 10, 10) },
+
+
+
+        // we must go from the point:
+        // (x0, y0) where x0 could be read as "the middle of the x axis" (0.5) and y0 as "the start of the y axis" (0)
+        new SKPoint(0.5f, 0),
+
+        // to the point:
+        // (x1, y1) where x1 could be read as "the middle of the x axis" (0.5) and y0 as "the end of the y axis" (1)
+        new SKPoint(0.5f, 1));
+    private static  LiveChartsCore.SkiaSharpView.Painting.LinearGradientPaint standby = new LiveChartsCore.SkiaSharpView.Painting.LinearGradientPaint(
+          new[] { new SKColor(128, 0, 20), new SKColor(10, 10, 10) },
+
+ 
+
+        // we must go from the point:
+        // (x0, y0) where x0 could be read as "the middle of the x axis" (0.5) and y0 as "the start of the y axis" (0)
+        new SKPoint(0.5f, 0),
+
+        // to the point:
+        // (x1, y1) where x1 could be read as "the middle of the x axis" (0.5) and y0 as "the end of the y axis" (1)
+        new SKPoint(0.5f, 1));
+
+    private LiveChartsCore.SkiaSharpView.Painting.LinearGradientPaint _current = standby; 
+    public LiveChartsCore.SkiaSharpView.Painting.LinearGradientPaint CurrentBackground
+    {
+        get => _current; 
+        set
+        {
+            if(_current != value)
+            {
+                _current = value;
+                this.OnPropertyChanged(nameof(CurrentBackground));    
+            }
+        }
+    }
+    public Axis[] YAxes { get; set; } =
+   {
+        new Axis
+        {
+            // forces the step of the axis to be at least 1
+            MinStep = 1,
+
+            // converts the log scale back for the label
+            Labeler = value => Math.Pow(s_logBase, value).ToString()
+        }
+    };
+
+    public Axis[] XAxes { get; set; } =
+ {
+        new Axis
+        {
+            // forces the step of the axis to be at least 1
+            MinStep = 1,
+
+            // converts the log scale back for the label
+            Labeler = value => value.ToString()
+        }
+    };
+
+    internal LineSeries<ObservableValue> series;
 
     public ViewModel()
     {
+
+
+        _current = standby; 
+
         // Use ObservableCollections to let the chart listen for changes (or any INotifyCollectionChanged). 
         _observableValues = new ObservableCollection<ObservableValue>
         {
-            // Use the ObservableValue or ObservablePoint types to let the chart listen for property changes 
-            // or use any INotifyPropertyChanged implementation 
-            new ObservableValue(2),
-            new(5), // the ObservableValue type is redundant and inferred by the compiler (C# 9 and above)
-            new(4),
-            new(5),
-            new(2),
-            new(6),
-            new(6),
-            new(6),
-            new(4),
-            new(2),
-            new(3),
-            new(4),
-            new(3)
+
         };
 
+        for (int i = 0; i < 60; i++)
+        {
+            _observableValues.Add(new(0));
+        }
+        series = new LineSeries<ObservableValue>
+        {
+            Values = _observableValues,
+            
+            Name = "Leak Rate",
+            Mapping = (logPoint, chartPoint) =>
+            {
+                // for the x coordinate, we use the X property of the LogaritmicPoint instance
+                chartPoint.SecondaryValue = logPoint.Coordinate.SecondaryValue;
+
+                // but for the Y coordinate, we will map to the logarithm of the value
+                chartPoint.PrimaryValue = Math.Log(logPoint.Coordinate.PrimaryValue, s_logBase);
+            },
+            DataLabelsSize = 2,
+            DataLabelsPaint = standby,
+        };
         LeakRateSeries = new ObservableCollection<ISeries>
         {
-            new LineSeries<ObservableValue>
-            {
-                Values = _observableValues,
-                Fill = null
-            }
+            series,
         };
+
 
         // in the following sample notice that the type int does not implement INotifyPropertyChanged
         // and our Series.Values property is of type List<T>
@@ -58,10 +145,12 @@ public partial class ViewModel
     public ObservableCollection<ISeries> LeakRateSeries { get; set; }
 
     [RelayCommand]
-    public void AddItem()
+    public void AddItem(double v)
     {
-        var randomValue = _random.Next(1, 10);
-        _observableValues.Add(new(randomValue));
+        if (_observableValues.Count >= 60)
+            RemoveItem(); 
+
+        _observableValues.Add(new(v));
     }
 
     [RelayCommand]
@@ -69,51 +158,5 @@ public partial class ViewModel
     {
         if (_observableValues.Count == 0) return;
         _observableValues.RemoveAt(0);
-    }
-
-    [RelayCommand]
-    public void UpdateItem()
-    {
-        var randomValue = _random.Next(1, 10);
-
-        // we grab the last instance in our collection
-        var lastInstance = _observableValues[_observableValues.Count - 1];
-
-        // finally modify the value property and the chart is updated!
-        lastInstance.Value = randomValue;
-    }
-
-    [RelayCommand]
-    public void ReplaceItem()
-    {
-        var randomValue = _random.Next(1, 10);
-        var randomIndex = _random.Next(0, _observableValues.Count - 1);
-        _observableValues[randomIndex] = new(randomValue);
-    }
-
-    [RelayCommand]
-    public void AddSeries()
-    {
-        //  for this sample only 5 series are supported.
-        if (LeakRateSeries.Count == 5) return;
-
-        LeakRateSeries.Add(
-            new LineSeries<int>
-            {
-                Values = new List<int>
-                {
-                    _random.Next(0, 10),
-                    _random.Next(0, 10),
-                    _random.Next(0, 10)
-                }
-            });
-    }
-
-    [RelayCommand]
-    public void RemoveSeries()
-    {
-        if (LeakRateSeries.Count == 1) return;
-
-        LeakRateSeries.RemoveAt(LeakRateSeries.Count - 1);
-    }
+    }   
 }

@@ -362,37 +362,13 @@
             <summary>The backing field for <see cref="P:VersaMonitor.ViewModel.AddItemCommand"/>.</summary>
         </member>
         <member name="P:VersaMonitor.ViewModel.AddItemCommand">
-            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:VersaMonitor.ViewModel.AddItem"/>.</summary>
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand`1"/> instance wrapping <see cref="M:VersaMonitor.ViewModel.AddItem(System.Double)"/>.</summary>
         </member>
         <member name="F:VersaMonitor.ViewModel.removeItemCommand">
             <summary>The backing field for <see cref="P:VersaMonitor.ViewModel.RemoveItemCommand"/>.</summary>
         </member>
         <member name="P:VersaMonitor.ViewModel.RemoveItemCommand">
             <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:VersaMonitor.ViewModel.RemoveItem"/>.</summary>
-        </member>
-        <member name="F:VersaMonitor.ViewModel.updateItemCommand">
-            <summary>The backing field for <see cref="P:VersaMonitor.ViewModel.UpdateItemCommand"/>.</summary>
-        </member>
-        <member name="P:VersaMonitor.ViewModel.UpdateItemCommand">
-            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:VersaMonitor.ViewModel.UpdateItem"/>.</summary>
-        </member>
-        <member name="F:VersaMonitor.ViewModel.replaceItemCommand">
-            <summary>The backing field for <see cref="P:VersaMonitor.ViewModel.ReplaceItemCommand"/>.</summary>
-        </member>
-        <member name="P:VersaMonitor.ViewModel.ReplaceItemCommand">
-            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:VersaMonitor.ViewModel.ReplaceItem"/>.</summary>
-        </member>
-        <member name="F:VersaMonitor.ViewModel.addSeriesCommand">
-            <summary>The backing field for <see cref="P:VersaMonitor.ViewModel.AddSeriesCommand"/>.</summary>
-        </member>
-        <member name="P:VersaMonitor.ViewModel.AddSeriesCommand">
-            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:VersaMonitor.ViewModel.AddSeries"/>.</summary>
-        </member>
-        <member name="F:VersaMonitor.ViewModel.removeSeriesCommand">
-            <summary>The backing field for <see cref="P:VersaMonitor.ViewModel.RemoveSeriesCommand"/>.</summary>
-        </member>
-        <member name="P:VersaMonitor.ViewModel.RemoveSeriesCommand">
-            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:VersaMonitor.ViewModel.RemoveSeries"/>.</summary>
         </member>
         <member name="T:VersaMonitor.StartStatus">
             

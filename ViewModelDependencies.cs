@@ -1,4 +1,6 @@
-﻿using Java.Lang;
+﻿
+
+using LiveChartsCore.Defaults;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,6 +17,8 @@ namespace VersaMonitor
     /// </summary>
     public partial class ViewModel
     {
+
+        public event OnConnectionChangeHandler OnConnectionChange; 
         private double _lr, _reject; 
         public string LeakRateMantissa { get; internal set; }
         public string LeakRateExponents { get; internal set; }
@@ -25,8 +29,22 @@ namespace VersaMonitor
         public Color StartStopButtonColor { get; internal set; } = Colors.ForestGreen; 
         public bool SSButtonEnabled { get; internal set; } = true;
 
+        public bool _passing = false; 
+        public bool Passing { 
+            get => _passing; 
+            internal set
+            {
+                if (_passing != value)
+                {
+                    _passing = value;
+                    OnPropertyChanged(nameof(Passing));
 
-        public bool Passing { get; internal set; } = false; 
+                    CurrentBackground = !LD.InCycle ? standby : this.Passing ? pass : fail;
+                }
+            
+            }
+
+        } 
         public bool InCycle { get; internal set; } = false; 
         public bool Connected { get; internal set; } = false;
         public bool Disconnected { get; internal set; } = true;
@@ -52,7 +70,9 @@ namespace VersaMonitor
                     var t  = GetLeakRateMantissaAndExponent(num);
                     LeakRateMantissa = t.mant;
                     LeakRateExponents = t.exp;
-                    Passing = num < _reject; 
+                    Passing = num < _reject;
+                    this.OnPropertyChanged(nameof(LeakRateMantissa)); 
+                    this.OnPropertyChanged(nameof(LeakRateExponents));
                     break;
 
                 case DetectorProperty.Pressure:
@@ -62,9 +82,14 @@ namespace VersaMonitor
 
                 case DetectorProperty.Reject:
                     num = (double)args.value;
-                    Passing = num < _reject; 
+                    Passing = num < _reject;
+                    
                     break;
 
+                case DetectorProperty.LRUnits:
+                    LeakRateUnits = args.value as string;
+                    this.OnPropertyChanged(nameof(LeakRateUnits)); 
+                    break;
                 case DetectorProperty.State:
                     CurrentCycleState = LD.modeString[((int)args.value)]; 
                     if(LD.State == DetectorState.Standby)
@@ -86,6 +111,11 @@ namespace VersaMonitor
                         StartStopButtonColor = Colors.DarkRed;
                         SSButtonEnabled = true;
                     }
+
+
+                    this.OnPropertyChanged(nameof(StartStopButtonText));
+                    this.OnPropertyChanged(nameof(StartStopButtonColor));
+                    this.OnPropertyChanged(nameof(SSButtonEnabled));
                     break;
             }
         }
@@ -95,7 +125,12 @@ namespace VersaMonitor
             //If Connected, make the dropdown go away (map visibility to the LD connected Variable) and vice versa if it disconnects
             //
             this.Connected = connected;
-            this.Disconnected = !connected; 
+            this.Disconnected = !connected;
+
+            this.OnPropertyChanged(nameof(Connected));
+            this.OnPropertyChanged(nameof(Disconnected));
+
+            OnConnectionChange?.Invoke(connected); 
         }
 
         public async Task TryStart(IPAddress add)
@@ -125,16 +160,36 @@ namespace VersaMonitor
 
         private (string mant, string exp) GetLeakRateMantissaAndExponent(double value)
         {
-            
             double tmpIn = value;
             string tmp = string.Format("{0:#.##E+00}", tmpIn);
+            try
+            {
+                
+
+                int e_index = tmp.IndexOf('E');
 
 
-            string r1 = tmp.Substring(0, 4);
-            string r2 = tmp.Substring(5, 3); 
+
+                if (e_index >= 0)
+                {   string r1 = tmp.Substring(0, e_index);
+                    e_index += 1; 
+                    string r2 = tmp.Substring(e_index, tmp.Length - e_index);
+                    return (r1, r2);
+                }
+
+                Console.WriteLine("Failed to convert leak rate: " + tmp);
+                return ("1.00", "-12");
+
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Failed to convert leak rate: " + tmp);
+                return ("1.00", "-12");
+                
+            }
             // ..: negatives
 
-           return (r1,r2);
+           
         }
     }
 }

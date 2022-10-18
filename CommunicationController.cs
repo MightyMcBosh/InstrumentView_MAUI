@@ -121,7 +121,7 @@ namespace VersaMonitor
                         Array.Clear(rcvbuf, 0, rcvbuf.Length);
                         string str = current.cmd + "\r";
                         byte[] b = Encoding.UTF8.GetBytes(str);
-                        Console.WriteLine($"cmd sent - {current.cmd}");
+                        //Console.WriteLine($"cmd sent - {current.cmd}");
 
                         iostream.Write(b, 0, b.Length);
                         sending = false;
