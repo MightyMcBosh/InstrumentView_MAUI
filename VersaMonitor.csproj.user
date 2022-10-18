@@ -6,10 +6,6 @@
     <ActiveDebugProfile>Samsung SM-G973U (Android 12.0 - API 31)</ActiveDebugProfile>
     <SelectedPlatformGroup>PhysicalDevice</SelectedPlatformGroup>
     <DefaultDevice>pixel_5_-_api_31</DefaultDevice>
+    <AndroidDesignerPreferredTheme>Theme.NoTitleBar</AndroidDesignerPreferredTheme>
   </PropertyGroup>
-  <ItemGroup>
-    <MauiXaml Update="IPPopup.xaml">
-      <SubType>Designer</SubType>
-    </MauiXaml>
-  </ItemGroup>
 </Project>

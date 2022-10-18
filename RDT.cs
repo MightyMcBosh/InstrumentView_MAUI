@@ -182,7 +182,7 @@ namespace VersaMonitor;
             tmp >>= 3;
             LD.CycleStatusDetail = (uint)(tmp & 15);
                         
-
+            
 
             //parse the second part of the RDT message
             ParseST(part2); 

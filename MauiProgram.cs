@@ -2,6 +2,7 @@
 using Microsoft.Maui.Controls.Hosting;
 using SkiaSharp.Views.Maui.Controls.Hosting;
 using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Views; 
 
 namespace VersaMonitor;
 
@@ -29,7 +30,10 @@ public static class MauiProgram
 			.ConfigureAnimations()
 			.UseMauiCommunityToolkit()
 			.UseSkiaSharp(true); 
+		
+		var mauiApp = builder.Build();
 
-		return builder.Build();
+
+		return mauiApp;
 	}
 }

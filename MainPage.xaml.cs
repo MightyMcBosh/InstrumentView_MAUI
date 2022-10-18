@@ -1,8 +1,8 @@
 ﻿
 
 
+using CommunityToolkit.Maui.Core.Views;
 using CommunityToolkit.Maui.Views;
-using Java.Security;
 using System.Net;
 using System.Runtime.CompilerServices;
 
@@ -11,59 +11,33 @@ namespace VersaMonitor;
 public partial class MainPage : ContentPage
 {
 	int count = 0;
-	ViewModel Vm; 
+	ViewModel Vm;
+	Popup pp; 
 	public MainPage()
 	{
 		InitializeComponent();
-		LD.ConnectionChanged += LD_ConnectionChanged;		
 		Vm = new ViewModel();
-		this.BindingContext = Vm; 
-		
-		this.Appearing += MainPage_Appearing;
+		this.BindingContext = Vm;
+          
 	}
 
-	private void MainPage_Appearing(object sender, EventArgs e)
-	{
-        new Task(TryConnect).Start();
-    }
+	
 
-	private void LD_ConnectionChanged(bool connected)
-	{
-		
-	}
-
-	private async void TryConnect()
-	{
-
-		while (!Vm.Connected)
-        {
-            await GetIPAddress();
-        }
-    }
-
-    public async Task GetIPAddress()
+    public async Task TryConnect()
     {
-        bool cont = false;
+        string result = await DisplayPromptAsync("Network Config", "Please Enter IP Address", "Connect");
+
         IPAddress ip = null;
 
-        while (!cont)
+        if (IPAddress.TryParse((result as string), out ip))
         {
-            string entry = CommunicationController.IP == null ? "0.0.0.0" : CommunicationController.IP.ToString();
-
-            var popup = new IPPopup(entry);
-
-            var result = await this.ShowPopupAsync(popup);
-
-
-            if (IPAddress.TryParse((result as string), out ip))
-                cont = true;
-
+            await Vm.TryStart(ip);
         }
+    }
 
-
-        await Vm.TryStart(ip); 
-		
-	}
-	
+    private void ConnectButtonClick(object sender, EventArgs e)
+    {
+        TryConnect(); 
+    }
 }
 

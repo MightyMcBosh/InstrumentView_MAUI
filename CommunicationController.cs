@@ -7,7 +7,8 @@ using System.Threading;
 using System.Threading.Tasks; 
 using System.Net; 
 using System.Net.Sockets;
-using System.Text; 
+using System.Text;
+
 
 namespace VersaMonitor
 {
@@ -37,7 +38,7 @@ namespace VersaMonitor
 
         static int numCommands, lastNumCommands, numBadCommands = 0;
 
-
+        static int port = 5102;
 
 
 
@@ -47,12 +48,19 @@ namespace VersaMonitor
             IP = ip;
 
             remoteEP = new IPEndPoint(IP, comPort);
-            localEP = new IPEndPoint(IPAddress.Any, 5000);
+            localEP = new IPEndPoint(IPAddress.Any, port++);
 
-            comSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            //comSocket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.KeepAlive, true);
-            comSocket.Bind(localEP);
-            await comSocket.ConnectAsync(remoteEP);
+            try
+            {
+                comSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                //comSocket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.KeepAlive, true);
+                comSocket.Bind(localEP);
+                await comSocket.ConnectAsync(remoteEP);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine($"Could not connect to {localEP}");                
+            }
         }
 
 

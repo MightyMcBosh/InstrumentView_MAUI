@@ -10,6 +10,7 @@
     </ContentPage.BindingContext>
     
     
+    
     <Grid x:Name="MainGrid" Background="">
         <Grid.RowDefinitions>
             <RowDefinition Height="4*"/>
@@ -17,24 +18,27 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
         
-        <lvc:CartesianChart  Grid.ColumnSpan="2" x:Name="VersaChart" Series="{Binding LeakRateSeries}"></lvc:CartesianChart>
+        <lvc:CartesianChart  Grid.ColumnSpan="3" x:Name="VersaChart" Series="{Binding LeakRateSeries}"></lvc:CartesianChart>
 
-        <VerticalStackLayout Grid.Column="0" Grid.Row="1">
-            <Button x:Name="StartStopButton" Margin="10"/>
+        <VerticalStackLayout Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1" IsVisible="{Binding Connected}">
+            <Button x:Name="StartStopButton" Margin="10" Text="{Binding StartStopButtonText}" BackgroundColor="{Binding StartStopButtonColor}" IsEnabled="{Binding SSButtonEnabled}"/>
             <Button x:Name="CalibrateButton" Margin="10" Text="Calibrate" BackgroundColor="Wheat"/>
         </VerticalStackLayout>
 
-        <HorizontalStackLayout Grid.Column ="1" Grid.Row ="1" HorizontalOptions="End">
+        <HorizontalStackLayout Grid.Column ="1" Grid.Row ="1" HorizontalOptions="End" IsVisible="{Binding Connected}" Grid.ColumnSpan="2">
             <Label x:Name="LeakRateMantissa" FontFamily="Lato" FontAttributes="Bold" FontSize="48" Margin="5,5,3,0" TextColor="White" Text="{Binding LeakRateMantissa}" VerticalOptions="End"  HorizontalOptions="End"></Label>
             <Label FontFamily="Lato" FontSize="24" Margin="5,5,5,10" TextColor="White" VerticalOptions="End" Text="x10" HorizontalOptions="End"></Label>
             <Label x:Name ="LeakRateExponent" Text="{Binding LeakRateExponents}" FontFamily="Lato" FontAttributes="Bold" FontSize="36" Margin="5,5,5,40" VerticalOptions="End" HorizontalOptions="End"></Label>
             <Label x:Name="LeakRateUnits" FontFamily="Lato"  FontSize="18" Margin="-30,5,5,5" VerticalOptions="End" HorizontalOptions="End" Text="{Binding LeakRateUnits}"></Label>
         </HorizontalStackLayout>
+
+        <Button x:Name ="ConnectButton" Clicked ="ConnectButtonClick" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan ="3" HorizontalOptions="Center" Margin="20" IsVisible="{Binding Disconnected}" Text="Connect" BackgroundColor ="ForestGreen" TextColor="White" FontFamily="Lato" FontSize="38" />
 
 
     </Grid>

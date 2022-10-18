@@ -18,11 +18,17 @@ namespace VersaMonitor
         public string LeakRateMantissa { get; internal set; }
         public string LeakRateExponents { get; internal set; }
         public string LeakRateUnits { get; internal set; }
-        public string CurrentCycleState { get; internal set; }
+        public string CurrentCycleState { get; internal set; } = "Standby";
+        public string StartStopButtonText { get; internal set; } = "Start";
 
-        public bool Passing { get; internal set; }
-        public bool InCycle { get; internal set; }
-        public bool Connected { get; internal set; }
+        public Color StartStopButtonColor { get; internal set; } = Colors.ForestGreen; 
+        public bool SSButtonEnabled { get; internal set; } = true;
+
+
+        public bool Passing { get; internal set; } = false; 
+        public bool InCycle { get; internal set; } = false; 
+        public bool Connected { get; internal set; } = false;
+        public bool Disconnected { get; internal set; } = true; 
        
 
 
@@ -60,6 +66,25 @@ namespace VersaMonitor
 
                 case DetectorProperty.State:
                     CurrentCycleState = LD.modeString[((int)args.value)]; 
+                    if(LD.State == DetectorState.Standby)
+                    {
+                        StartStopButtonText = "Start";
+                        StartStopButtonColor = Colors.ForestGreen;
+                        SSButtonEnabled = true;
+
+                    }
+                    else if(LD.CalibrationActive)
+                    {
+                        StartStopButtonText = "Calibrating";
+                        StartStopButtonColor = Colors.DarkGoldenrod;
+                        SSButtonEnabled = false;
+                    }
+                    else
+                    {
+                        StartStopButtonText = "Stop";
+                        StartStopButtonColor = Colors.DarkRed;
+                        SSButtonEnabled = true;
+                    }
                     break;
             }
         }
@@ -69,6 +94,7 @@ namespace VersaMonitor
             //If Connected, make the dropdown go away (map visibility to the LD connected Variable) and vice versa if it disconnects
             //
             this.Connected = connected;
+            this.Disconnected = !connected; 
         }
 
         public async Task TryStart(IPAddress add)

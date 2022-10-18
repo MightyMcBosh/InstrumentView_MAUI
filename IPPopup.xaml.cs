@@ -1,10 +1,12 @@
+using CommunityToolkit.Maui.Views;
+
 namespace VersaMonitor;
 
-public partial class IPPopup
+public partial class IPPopup : Popup
 {
 	public EventHandler OnButtonClicked;
 
-	public IPPopup(string ip = null)
+	public IPPopup(string ip = null) 
 	{
 		InitializeComponent();
 		if (ip != null)

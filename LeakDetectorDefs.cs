@@ -52,7 +52,8 @@ namespace VersaMonitor
         Sniff,
         Startup,
         Shutdown,
-        Error
+        Error,
+        Calibrating
     }
 
     public enum DetectorProperty
