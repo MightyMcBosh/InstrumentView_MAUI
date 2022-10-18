@@ -28,7 +28,7 @@ namespace VersaMonitor
         static bool isRunningCleanup = false;
         static bool SendCustom;
         static AsciiCommand custom; 
-        static IPAddress IP; 
+        public static IPAddress IP { get; private set; } 
         static int comPort = 5226;
         static IPEndPoint localEP, remoteEP; 
         static Socket comSocket;

@@ -14,14 +14,16 @@ namespace VersaMonitor
     /// </summary>
     public partial class ViewModel
     {
-        
+        private double _lr, _reject; 
         public string LeakRateMantissa { get; internal set; }
         public string LeakRateExponents { get; internal set; }
         public string LeakRateUnits { get; internal set; }
+        public string CurrentCycleState { get; internal set; }
 
         public bool Passing { get; internal set; }
         public bool InCycle { get; internal set; }
         public bool Connected { get; internal set; }
+       
 
 
         private CommunicationController controller; 
@@ -39,7 +41,26 @@ namespace VersaMonitor
             switch(args.property)
             {
                 case DetectorProperty.LeakRate:
-                    break; 
+                    double num = (double)args.value;
+                    var t  = GetLeakRateMantissaAndExponent(num);
+                    LeakRateMantissa = t.mant;
+                    LeakRateExponents = t.exp;
+                    Passing = num < _reject; 
+                    break;
+
+                case DetectorProperty.Pressure:
+                    
+                    break;
+
+
+                case DetectorProperty.Reject:
+                    num = (double)args.value;
+                    Passing = num < _reject; 
+                    break;
+
+                case DetectorProperty.State:
+                    CurrentCycleState = LD.modeString[((int)args.value)]; 
+                    break;
             }
         }
 
@@ -50,7 +71,7 @@ namespace VersaMonitor
             this.Connected = connected;
         }
 
-        public async void TryStart(IPAddress add)
+        public async Task TryStart(IPAddress add)
         {
             await controller.Connect(add); 
         }
@@ -64,6 +85,38 @@ namespace VersaMonitor
         {
             if (Connected)
                 controller.StartCal(null); 
+        }
+
+        private (string mant, string exp) GetLeakRateMantissaAndExponent(double value)
+        {
+            
+            double tmpIn = value;
+            string r1 = "", r2 = ""; 
+            int baseExp;
+            // convert mantissa/exp first:
+            if (value == 0.0)
+            {
+                
+            }
+            else if (value > 0.0 & value < 1.0)      // positive, < 1
+            {
+                baseExp = 0;
+                while (tmpIn < 0.999) //two digits of precision, have issues with this parsing to like 0.9999999999999976, which is > .999 but smaller than 1
+                {
+                    tmpIn *= 10;
+                    --baseExp;
+                }
+                for (int I = 0; I < 2; I++)     // add two -> implied decimal
+                {
+                    tmpIn *= 10;
+                    --baseExp;
+                }
+                r1 = tmpIn.ToString("D");
+                r2 =  baseExp.ToString("d2");
+            }            
+            // ..: negatives
+
+           return (r1,r2);
         }
     }
 }
