@@ -1,5 +1,6 @@
 ﻿
 
+
 using LiveChartsCore.Defaults;
 using System;
 using System.Collections.Generic;
@@ -19,11 +20,20 @@ namespace VersaMonitor
     {
 
         public event OnConnectionChangeHandler OnConnectionChange; 
-        private double _lr, _reject; 
+        private double _lr, _reject;
+        private string _cyclestate = "Standby"; 
         public string LeakRateMantissa { get; internal set; }
         public string LeakRateExponents { get; internal set; }
         public string LeakRateUnits { get; internal set; }
-        public string CurrentCycleState { get; internal set; } = "Standby";
+        public string CurrentCycleState { get => _cyclestate;
+            internal set {
+                if (_cyclestate != value)
+                {
+                    _cyclestate = value;
+                    OnPropertyChanged(nameof(CurrentCycleState)); 
+                }
+            } 
+        }
         public string StartStopButtonText { get; internal set; } = "Start";
 
         public Color StartStopButtonColor { get; internal set; } = Colors.ForestGreen; 
@@ -39,7 +49,9 @@ namespace VersaMonitor
                     _passing = value;
                     OnPropertyChanged(nameof(Passing));
 
-                    CurrentBackground = !LD.InCycle ? standby : this.Passing ? pass : fail;
+                    CurrentBackground = (LD.State == DetectorState.Standby) ? standby : this.Passing ? pass : fail;
+        
+                     
                 }
             
             }
@@ -81,9 +93,9 @@ namespace VersaMonitor
 
 
                 case DetectorProperty.Reject:
-                    num = (double)args.value;
-                    Passing = num < _reject;
-                    
+                    _reject = (double)args.value;
+                    Passing =  LD.LeakRate < _reject;
+
                     break;
 
                 case DetectorProperty.LRUnits:
@@ -97,7 +109,7 @@ namespace VersaMonitor
                         StartStopButtonText = "Start";
                         StartStopButtonColor = Colors.ForestGreen;
                         SSButtonEnabled = true;
-
+                        CurrentBackground = standby; 
                     }
                     else if(LD.CalibrationActive)
                     {
@@ -112,6 +124,11 @@ namespace VersaMonitor
                         SSButtonEnabled = true;
                     }
 
+
+                    if(LD.State != DetectorState.Standby)
+                    {
+                        CurrentBackground = Passing ? pass : fail; 
+                    }
 
                     this.OnPropertyChanged(nameof(StartStopButtonText));
                     this.OnPropertyChanged(nameof(StartStopButtonColor));
@@ -138,12 +155,16 @@ namespace VersaMonitor
             if (!InUse)
             {
                 InUse = true; 
-                await controller.Connect(add);
+                var t =  controller.Connect(add);
+                await t;
 
-                await controller.RunEthernet();
-                //disconnected
-                LD.Connected = false;
-                InUse = false; 
+                if (t.GetAwaiter().GetResult())
+                {
+                    await controller.RunEthernet();
+                    //disconnected
+                    LD.Connected = false;
+                    InUse = false;  
+                }
             }
         }
         public void StartStopButtonPress()

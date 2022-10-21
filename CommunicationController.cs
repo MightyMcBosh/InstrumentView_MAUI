@@ -47,7 +47,7 @@ namespace VersaMonitor
 
 
 
-        public async Task Connect(IPAddress ip)
+        public async Task<bool> Connect(IPAddress ip)
         {
             IP = ip;
 
@@ -59,15 +59,16 @@ namespace VersaMonitor
                 comSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 //comSocket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.KeepAlive, true);
                 comSocket.Bind(localEP);
-                await comSocket.ConnectAsync(remoteEP);
+                comSocket.Connect(remoteEP);
                 Console.WriteLine($"Connected ! to {remoteEP}");
-                LD.Connected = true; 
-                
+                LD.Connected = true;
+                return true; 
             }
             catch (Exception)
             {
                 Console.WriteLine($"Could not connect to {remoteEP}");                
             }
+            return false; 
         }
 
 
@@ -147,7 +148,7 @@ namespace VersaMonitor
                             builder.Clear(); 
                             rcvTimeout.Change(Timeout.Infinite, Timeout.Infinite);
 
-                           // Console.WriteLine(resp);
+                           //Console.WriteLine(resp);
 
 
                             if (current.ackloc != 255 && resp[current.ackloc] != 0x06)

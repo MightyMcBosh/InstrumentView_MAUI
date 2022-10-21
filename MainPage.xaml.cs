@@ -60,8 +60,9 @@ public partial class MainPage : ContentPage
 
     private void GetLeakRatePoint(object state)
     {
-
+       
         Vm.AddItem(LD.LeakRate);
+    
     }
 
     private void StartStopButton_Clicked(object sender, EventArgs e)

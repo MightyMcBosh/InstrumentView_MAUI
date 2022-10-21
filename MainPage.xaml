@@ -2,18 +2,21 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
+             xmlns:lv="clr-namespace:LiveChartsCore.SkiaSharpView;assembly=LiveChartsCore.SkiaSharpView"
              xmlns:vm="clr-namespace:VersaMonitor" 
-             x:Class="VersaMonitor.MainPage">
+             x:Class="VersaMonitor.MainPage"
+             Shell.NavBarIsVisible="False">
 
     <ContentPage.BindingContext>
         <vm:ViewModel/>
     </ContentPage.BindingContext>
 
 
-
     <Grid x:Name="MainGrid" Background="">
         <Grid.RowDefinitions>
+            
             <RowDefinition Height="4*"/>
+            <RowDefinition Height="0.5*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -23,24 +26,27 @@
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
-        
-        <lvc:CartesianChart  Grid.ColumnSpan="3" x:Name="VersaChart" Series="{Binding LeakRateSeries}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}"></lvc:CartesianChart>
 
-        <VerticalStackLayout Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1" IsVisible="{Binding Connected}">
+        <lvc:CartesianChart  Grid.ColumnSpan="3" x:Name="VersaChart" Series="{Binding LeakRateSeries}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}" ></lvc:CartesianChart>
+        <Label x:Name ="StatusLabel" FontFamily="Lato" FontSize="20" Grid.Row="1" Grid.ColumnSpan="3" HorizontalOptions="Start" HorizontalTextAlignment="Start" Margin="10" IsVisible="{Binding Connected}" Text="{Binding CurrentCycleState}"/> 
+        <VerticalStackLayout Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="1" IsVisible="{Binding Connected}">
             <Button x:Name="StartStopButton" Margin="10" Text="{Binding StartStopButtonText}" BackgroundColor="{Binding StartStopButtonColor}" IsEnabled="{Binding SSButtonEnabled}" Clicked="StartStopButton_Clicked"/>
             <Button x:Name="CalibrateButton" Margin="10" Text="Calibrate" BackgroundColor="DarkGoldenrod" Clicked="CalibrateButton_Clicked"/>
         </VerticalStackLayout>
 
-        <HorizontalStackLayout Grid.Column ="1" Grid.Row ="1" HorizontalOptions="End" IsVisible="{Binding Connected}" Grid.ColumnSpan="2" Padding="10,10,10,20">
+        <HorizontalStackLayout Grid.Column ="1" Grid.Row ="2" HorizontalOptions="End" IsVisible="{Binding Connected}" Grid.ColumnSpan="2" Padding="10,10,10,20">
             <Label x:Name="LeakRateMantissa" FontFamily="Lato" FontAttributes="Bold" FontSize="48" Margin="5,5,3,0" TextColor="White" Text="{Binding LeakRateMantissa}" VerticalOptions="End"  HorizontalOptions="End"></Label>
             <Label FontFamily="Lato" FontSize="24" Margin="5,5,5,10" TextColor="White" VerticalOptions="End" Text="x10" HorizontalOptions="End"></Label>
             <Label x:Name ="LeakRateExponent" Text="{Binding LeakRateExponents}" FontFamily="Lato" FontAttributes="Bold" FontSize="36" Margin="5,5,5,40" VerticalOptions="End" HorizontalOptions="End"></Label>
             <Label x:Name="LeakRateUnits" FontFamily="Lato"  FontSize="20" Margin="-60,5,5,13" VerticalOptions="End" HorizontalOptions="End" Text="{Binding LeakRateUnits}"></Label>
         </HorizontalStackLayout>
 
-        <Button x:Name ="ConnectButton" Clicked ="ConnectButtonClick" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan ="3" HorizontalOptions="Center" Margin="20" IsVisible="{Binding Disconnected}" Text="Connect" BackgroundColor ="ForestGreen" TextColor="White" FontFamily="Lato" FontSize="38" />
+        <Button x:Name ="ConnectButton" Clicked ="ConnectButtonClick" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan ="3" HorizontalOptions="Center" Margin="20" IsVisible="{Binding Disconnected}" Text="Connect" BackgroundColor ="ForestGreen" TextColor="White" FontFamily="Lato" FontSize="38" />
 
 
     </Grid>
- 
+
+
+
+
 </ContentPage>

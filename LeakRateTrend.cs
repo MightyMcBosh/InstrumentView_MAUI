@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using Android.App.Usage;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
@@ -17,7 +17,7 @@ namespace VersaMonitor;
 [ObservableObject]
 public partial class ViewModel
 {
-    private readonly Random _random = new();
+   
     private readonly ObservableCollection<ObservableValue> _observableValues;
     private static readonly int s_logBase = 10; 
 
@@ -45,7 +45,7 @@ public partial class ViewModel
         // (x1, y1) where x1 could be read as "the middle of the x axis" (0.5) and y0 as "the end of the y axis" (1)
         new SKPoint(0.5f, 1));
     private static  LiveChartsCore.SkiaSharpView.Painting.LinearGradientPaint standby = new LiveChartsCore.SkiaSharpView.Painting.LinearGradientPaint(
-          new[] { new SKColor(128, 0, 20), new SKColor(10, 10, 10) },
+          new[] { new SKColor(20, 0, 128), new SKColor(10, 10, 10) },
 
  
 
@@ -66,7 +66,10 @@ public partial class ViewModel
             if(_current != value)
             {
                 _current = value;
-                this.OnPropertyChanged(nameof(CurrentBackground));    
+                this.OnPropertyChanged(nameof(CurrentBackground));
+                
+                series.Fill = _current;
+                  
             }
         }
     }
@@ -74,11 +77,11 @@ public partial class ViewModel
    {
         new Axis
         {
-            // forces the step of the axis to be at least 1
-            MinStep = 1,
+            
+            LabelsPaint = new SolidColorPaint(SKColors.White),
 
             // converts the log scale back for the label
-            Labeler = value => Math.Pow(s_logBase, value).ToString()
+            Labeler = value => string.Format("{0:#E+00}", value), 
         }
     };
 
@@ -88,7 +91,7 @@ public partial class ViewModel
         {
             // forces the step of the axis to be at least 1
             MinStep = 1,
-
+           
             // converts the log scale back for the label
             Labeler = value => value.ToString()
         }
@@ -99,7 +102,7 @@ public partial class ViewModel
     public ViewModel()
     {
 
-
+        
         _current = standby; 
 
         // Use ObservableCollections to let the chart listen for changes (or any INotifyCollectionChanged). 
@@ -115,7 +118,6 @@ public partial class ViewModel
         series = new LineSeries<ObservableValue>
         {
             Values = _observableValues,
-            
             Name = "Leak Rate",
             Mapping = (logPoint, chartPoint) =>
             {
@@ -123,16 +125,24 @@ public partial class ViewModel
                 chartPoint.SecondaryValue = logPoint.Coordinate.SecondaryValue;
 
                 // but for the Y coordinate, we will map to the logarithm of the value
-                chartPoint.PrimaryValue = Math.Log(logPoint.Coordinate.PrimaryValue, s_logBase);
+                chartPoint.PrimaryValue = -Math.Log(logPoint.Coordinate.PrimaryValue, s_logBase);
             },
-            DataLabelsSize = 2,
-            DataLabelsPaint = standby,
+            DataLabelsSize = 0,
+            Stroke = new SolidColorPaint
+            {
+                Color = new SKColor(255, 255, 255),
+                StrokeThickness = 5
+            },
+            GeometrySize = 0,
+            Fill = standby,
         };
         LeakRateSeries = new ObservableCollection<ISeries>
         {
             series,
         };
 
+        
+        
 
         // in the following sample notice that the type int does not implement INotifyPropertyChanged
         // and our Series.Values property is of type List<T>
@@ -158,5 +168,37 @@ public partial class ViewModel
     {
         if (_observableValues.Count == 0) return;
         _observableValues.RemoveAt(0);
-    }   
+    }
+
+
+    private static int FastLog10(double input)
+    {
+        return (input >= 10000000000000) ? 13 :
+            (input >= 1000000000000) ? 12 :
+            (input >= 100000000000) ? 11 :
+            (input >= 10000000000) ? 10 :
+            (input >= 1000000000) ? 9 :
+            (input >= 100000000) ? 8 :
+            (input >= 10000000) ? 7 :
+            (input >= 1000000) ? 6 :
+            (input >= 100000) ? 5 :
+            (input >= 10000) ? 4 :
+            (input >= 1000) ? 3 :
+            (input >= 100) ? 2 :
+            (input >= 10) ? 1 :
+            (input >= 1) ? 0 :
+            (input >= 0.1) ? -1 :
+            (input >= 0.01) ? -2 :
+            (input >= 0.001) ? -3 :
+            (input >= 0.0001) ? -4 :
+            (input >= 0.00001) ? -5 :
+            (input >= 0.000001) ? -6 :
+            (input >= 0.0000001) ? -7 :
+            (input >= 0.00000001) ? -8 :
+            (input >= 0.000000001) ? -9 :
+            (input >= 0.0000000001) ? -10 :
+            (input >= 0.00000000001) ? -11 :
+            (input >= 0.000000000001) ? -12 :
+            (input >= 0.0000000000001) ? -13 : -14;
+    }
 }

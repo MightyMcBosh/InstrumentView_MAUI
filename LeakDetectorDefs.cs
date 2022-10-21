@@ -6,24 +6,30 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 
+
 namespace VersaMonitor
 {
-    public class  AsciiCommand
+    public class AsciiCommand
     {
-        public AsciiCommand( string cmd, string p, int responseLength, int parseLoc)
+        public AsciiCommand(string cmd, string p, int responseLength, int parseLoc)
         {
             this.cmd = cmd;
             this.parameters = p;
             this.ackloc = responseLength;
-            this.ParseOpt = parseLoc; 
+            this.ParseOpt = parseLoc;
         }
 
         public string cmd;
         public string parameters;
         public int ackloc;
-        public int ParseOpt;            
+        public int ParseOpt;
     }
-
+    public enum TestMethod
+    {
+        Vac,
+        Sniff
+    }
+    
     public enum Units
     {
         mbar,
@@ -51,11 +57,16 @@ namespace VersaMonitor
         Fine,
         Ultra,
         Sniff,
-        Startup,
-        Shutdown,
-        Error,
-        Calibrating
+        Calibration
     }
+
+    public enum DetectorStatusCode
+        {
+        Startup, 
+        InCal, 
+        HardVac,
+        Sniff
+        }
 
     public enum DetectorProperty
     {
@@ -173,7 +184,7 @@ namespace VersaMonitor
                 if (value != _reject)
                 {
                     _reject = value;
-                    StatusChanged?.Invoke(new OnStatusChangeHandlerArgs(DetectorProperty.LeakRate, value));
+                    StatusChanged?.Invoke(new OnStatusChangeHandlerArgs(DetectorProperty.Reject, value));
                 }
             }
         }
@@ -183,8 +194,10 @@ namespace VersaMonitor
         //?ST Data
         public static bool InCycle;
         public static Mode TestMode;
+        public static TestMethod TestMethod; 
         public static Units Unit = Units.mbar;
         public static bool RejectCrossed = false;
+        
         public static bool ZeroOn = false;
         public static bool CalInProgress;
         public static bool VRough, VGross, VFine, VUltra4, VUltra5, VVent, VCal, V8, V9, VSniff, VPurge; //Valves on the manifold
@@ -222,6 +235,9 @@ namespace VersaMonitor
         public static AsciiCommand StartZero = new AsciiCommand("=AZE", "", 0, 0);
         public static AsciiCommand StopZero = new AsciiCommand("=AZD", "", 0, 0);
         public static AsciiCommand GetUnits = new AsciiCommand("?UN", "", 2, 8);
+        public static AsciiCommand GetSniffLeakReject = new AsciiCommand("?S1S", "", 7, 9);
+        public static AsciiCommand GetVacLeakReject = new AsciiCommand("?S1H", "", 7, 10);
+        public static AsciiCommand GetTestMethod = new AsciiCommand("?TST", "", 2, 11);
 
 
 
@@ -232,15 +248,21 @@ namespace VersaMonitor
         GetLeakRate,
         GetStatus,
         GetForelinePressure,
+        GetCycleState,
         GetLeakRate,
         GetStatus,
         GetRDT,
+         GetCycleState,
         GetLeakRate,
         GetForelinePressure,
         GetLeakRate,
         GetStatus,
         GetZeroStatus,
         GetErrorState,
+         GetCycleState,
+         GetSniffLeakReject,
+         GetVacLeakReject,
+         GetTestMethod,
         };
 
 
@@ -317,13 +339,28 @@ namespace VersaMonitor
                 case 7: //zero Status
                     LD.ZeroOn = resp.Substring(0, 1) == "E"; 
                     break;
-
+                    
                 case 8: //?UN
                     LD.LRUnits = LD.unitStrings[int.Parse(resp.Substring(0, 1))];                    
                     break;
 
-
-
+                case 9: //?S1S
+                    double rej1 = GetCF(resp.Substring(0, 6));
+                    if (LD.TestMethod == TestMethod.Vac)
+                        LD.RejectLimit = rej1; 
+                    break;
+                    
+                case 10: //?S1H
+                    double rej2 = GetCF(resp.Substring(0, 6));
+                    if (LD.TestMethod == TestMethod.Sniff)
+                        LD.RejectLimit = rej2; 
+                        break;
+                case 11:
+                    if (resp[0] == '2')
+                        LD.TestMethod = TestMethod.Sniff;
+                    else
+                        LD.TestMethod = TestMethod.Vac; 
+                    break; 
             }
 
         }
@@ -343,8 +380,11 @@ namespace VersaMonitor
         }
         private static void ParseValveStatus(string value)
         {
+            DetectorState tmpState = DetectorState.Standby; 
             try
             {
+
+                
                 int N = 0;
                 int j = int.Parse(value);       // get the integer status value
                 string ss = "";
@@ -390,7 +430,8 @@ namespace VersaMonitor
                 !LD.VSniff
                 )
             {
-                LD.TestMode = Mode.Standby; 
+                LD.TestMode = Mode.Standby;
+                tmpState = DetectorState.Standby; 
             }
 
             //////////////////////////////////////////////////////// ROUGHING:
@@ -415,6 +456,7 @@ namespace VersaMonitor
                )
             {
                 LD.TestMode = Mode.Rough;
+                tmpState = DetectorState.Rough;
             }
 
             //////////////////////////////////////////////////////// GROSS LEAK:
@@ -439,6 +481,7 @@ namespace VersaMonitor
                )
             {
                 LD.TestMode = Mode.Gross;
+                tmpState = DetectorState.Gross; 
             }
 
             ///////////////////////////////////////////////////////// FINE
@@ -463,6 +506,7 @@ namespace VersaMonitor
                )
             {
                 LD.TestMode = Mode.Fine;
+                tmpState = DetectorState.Fine; 
             }
 
             //////////////////////////////////////////////////////////// ULTRA:
@@ -487,6 +531,7 @@ namespace VersaMonitor
                )
             {
                 LD.TestMode = Mode.Ultra;
+                tmpState = DetectorState.Ultra; 
             }
 
             ////////////////////////////////////////////////////////////// Sniff:
@@ -511,9 +556,16 @@ namespace VersaMonitor
                )
             {
                 LD.TestMode = Mode.Sniff;
+                tmpState = DetectorState.Sniff; 
             }
             //////////////////////////////////////////////////////// ROUGHING:
-           
+
+
+
+            if (LD.CalibrationActive)
+                tmpState = DetectorState.Calibration;
+
+            LD.State = tmpState; 
         }
     }
 }
