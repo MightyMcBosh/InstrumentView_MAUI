@@ -1005,11 +1005,11 @@ C:\Users\benj\source\repos\VersaMonitor\obj\Debug\net6.0-android\android\src\crc
 C:\Users\stone\source\InstrumentView_MAUI\bin\Debug\net6.0-android\VersaMonitor.runtimeconfig.json
 C:\Users\stone\source\InstrumentView_MAUI\bin\Debug\net6.0-android\VersaMonitor.dll
 C:\Users\stone\source\InstrumentView_MAUI\bin\Debug\net6.0-android\VersaMonitor.pdb
-C:\Users\stone\source\InstrumentView_MAUI\bin\Debug\net6.0-android\com.companyname.versamonitor.apk
-C:\Users\stone\source\InstrumentView_MAUI\bin\Debug\net6.0-android\com.companyname.versamonitor.aab
-C:\Users\stone\source\InstrumentView_MAUI\bin\Debug\net6.0-android\com.companyname.versamonitor-Signed.aab
-C:\Users\stone\source\InstrumentView_MAUI\bin\Debug\net6.0-android\com.companyname.versamonitor-Signed.apk
-C:\Users\stone\source\InstrumentView_MAUI\bin\Debug\net6.0-android\com.companyname.versamonitor-Signed.apk.idsig
+C:\Users\stone\source\InstrumentView_MAUI\bin\Debug\net6.0-android\com.lacotech.versamonitor.apk
+C:\Users\stone\source\InstrumentView_MAUI\bin\Debug\net6.0-android\com.lacotech.versamonitor.aab
+C:\Users\stone\source\InstrumentView_MAUI\bin\Debug\net6.0-android\com.lacotech.versamonitor-Signed.aab
+C:\Users\stone\source\InstrumentView_MAUI\bin\Debug\net6.0-android\com.lacotech.versamonitor-Signed.apk
+C:\Users\stone\source\InstrumentView_MAUI\bin\Debug\net6.0-android\com.lacotech.versamonitor-Signed.apk.idsig
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\.NETCoreApp,Version=v6.0.AssemblyAttributes.cs
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\build.props
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\adb.props
@@ -1110,6 +1110,7 @@ C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\lp\163\jl\fil
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\lp\164\jl\files.cache
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\lp\165\jl\files.cache
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\lp\166\jl\files.cache
+C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\R.txt
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\R.cs.flag
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\VersaMonitor.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\VersaMonitor.AssemblyInfoInputs.cache
@@ -1120,14 +1121,13 @@ C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\VersaMonitor.
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\VersaMonitor.pdb
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\VersaMonitor.genruntimeconfig.cache
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\VersaMonitor.runtimeconfig.json.bin
-C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\bin\com.companyname.versamonitor.apk
+C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\bin\com.lacotech.versamonitor.apk
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\bin\base.zip
-C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\bin\com.companyname.versamonitor.aab
-C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\bin\com.companyname.versamonitor.apks
+C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\bin\com.lacotech.versamonitor.aab
+C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\bin\com.lacotech.versamonitor.apks
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\res\values\colors.xml
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\res\resources\drawable\maui_splash_image.xml
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\res\resources\values\maui_colors.xml
-C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\R.txt
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\uploadflags.txt
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\resolvedassemblies.hash
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\assets\CommunityToolkit.Maui.Core.dll
@@ -1142,7 +1142,6 @@ C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\asset
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\assets\LiveChartsCore.dll
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\assets\LiveChartsCore.SkiaSharpView.dll
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\assets\LiveChartsCore.SkiaSharpView.Maui.dll
-C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\assets\machine.config
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\assets\Microsoft.CSharp.dll
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\assets\Microsoft.Extensions.Configuration.Abstractions.dll
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\assets\Microsoft.Extensions.Configuration.dll
@@ -1501,6 +1500,7 @@ C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\AndroidManife
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\AndroidManifest.xml
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\__environment__.txt
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\src\mono\MonoRuntimeProvider.java
+C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\assets\machine.config
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\bin\mono.android.jar
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\static.flag
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\buildid.txt
@@ -1550,7 +1550,6 @@ C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\src\a
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\src\androidx\viewpager2\R.java
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\src\androidx\window\R.java
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\src\com\bumptech\glide\R.java
-C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\src\com\companyname\versamonitor\R.java
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\src\com\google\android\material\R.java
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\src\com\google\android\material\snackbar\Snackbar_SnackbarActionClickImplementor.java
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\src\com\microsoft\maui\R.java
@@ -1992,6 +1991,7 @@ C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\src\m
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\src\mono\com\google\android\material\textfield\TextInputLayout_OnEndIconChangedListenerImplementor.java
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\src\mono\MonoPackageManager_Resources.java
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\bin\packaged_resources
+C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\src\com\lacotech\versamonitor\R.java
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\compressed_assemblies.arm64-v8a.s
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\typemaps.arm64-v8a.o
 C:\Users\stone\source\InstrumentView_MAUI\obj\Debug\net6.0-android\android\environment.arm64-v8a.o

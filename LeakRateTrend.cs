@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-
+using Android.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Java.Security;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
@@ -57,7 +58,16 @@ public partial class ViewModel
         // (x1, y1) where x1 could be read as "the middle of the x axis" (0.5) and y0 as "the end of the y axis" (1)
         new SKPoint(0.5f, 1));
 
-    private LiveChartsCore.SkiaSharpView.Painting.LinearGradientPaint _current = standby; 
+    private LiveChartsCore.SkiaSharpView.Painting.LinearGradientPaint _current = standby;
+
+
+    private static SolidColorPaint WhitePaint = new SolidColorPaint(SKColors.White);
+    private static SolidColorPaint DarkPaint = new SolidColorPaint(SKColors.DarkGray);
+    private static SolidColorPaint WhiteStroke = new SolidColorPaint(SKColors.White)
+    { StrokeThickness = 5 };
+    
+    private static SolidColorPaint DarkStroke = new SolidColorPaint(SKColors.DarkGray)
+    { StrokeThickness = 5 };
     public LiveChartsCore.SkiaSharpView.Painting.LinearGradientPaint CurrentBackground
     {
         get => _current; 
@@ -77,9 +87,9 @@ public partial class ViewModel
    {
         new Axis
         {
-            
-            LabelsPaint = new SolidColorPaint(SKColors.White),
-
+#if ANDROID            
+            LabelsPaint = Application.Current.RequestedTheme == AppTheme.Dark ? WhitePaint : DarkPaint,
+#endif
             // converts the log scale back for the label
             Labeler = value => string.Format("{0:#E+00}", value), 
         }
@@ -128,11 +138,7 @@ public partial class ViewModel
                 chartPoint.PrimaryValue = -Math.Log(logPoint.Coordinate.PrimaryValue, s_logBase);
             },
             DataLabelsSize = 0,
-            Stroke = new SolidColorPaint
-            {
-                Color = new SKColor(255, 255, 255),
-                StrokeThickness = 5
-            },
+            Stroke = Application.Current.RequestedTheme == AppTheme.Dark ? WhiteStroke : DarkStroke,
             GeometrySize = 0,
             Fill = standby,
         };
@@ -141,7 +147,7 @@ public partial class ViewModel
             series,
         };
 
-        
+        Application.Current.RequestedThemeChanged += OnViewModelThemeChanged; 
         
 
         // in the following sample notice that the type int does not implement INotifyPropertyChanged
@@ -150,6 +156,12 @@ public partial class ViewModel
         // this means the following series is not listening for changes.
         // Series.Add(new ColumnSeries<int> { Values = new List<int> { 2, 4, 6, 1, 7, -2 } }); 
         InitializeLDMap(); 
+    }
+
+    private void OnViewModelThemeChanged(object sender, AppThemeChangedEventArgs e)
+    {
+        series.Stroke = e.RequestedTheme == AppTheme.Dark ? WhiteStroke : DarkStroke;
+        YAxes[0].LabelsPaint = e.RequestedTheme == AppTheme.Dark ? WhitePaint : DarkPaint;
     }
 
     public ObservableCollection<ISeries> LeakRateSeries { get; set; }
